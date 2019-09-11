@@ -55,6 +55,7 @@
                         }else if(tagName == 'DIV'){
                             e_jel.css('background-image', `url('${e.target.result}')`);
                         }
+                        e_jel.addClass('sd-image-picker-preview-show');
                     }
                 }
     
@@ -75,6 +76,10 @@
                 e_jel.on('click', function(){
                     input_jel.trigger('click');
                 });
+            }
+            
+            for(let e_iprev_name of opts_new['image_preview_els_name']){
+                $(e_iprev_name).addClass('sd-image-picker-preview-none');
             }
         }
     
