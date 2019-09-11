@@ -20,11 +20,19 @@
 	let CORE = function(){
 		let input_jel, opts_new;
 		
-		let readURL = function(input) {            
+		let readURL = function(input, execPreOnLoad=function(){}) {            
 			if (input.files && input.files[0]) {
+				
+				var event = $.Event("fileLoaded");
+				event.file = input.files[0];
+				input_jel.trigger(event);
+				
+				input_jel.data('sd-image-picker-data-file', input.files[0]);
+				
 				var reader = new FileReader();
-	
 				reader.onload = function(e) {
+					if(typeof execPreOnLoad == "function") execPreOnLoad();
+					
 					for(let e_iprev_name of opts_new['image_preview_els_name']){
 						let e_jel = $(e_iprev_name);
 						let tagName = e_jel.prop('tagName');
@@ -40,7 +48,6 @@
 				reader.readAsDataURL(input.files[0]);
 			}
 		}
-		
 		
 		this.methods = {
 			init : function(opts) {
@@ -72,6 +79,24 @@
 					input_jel.on('change', function() {
 						readURL(this);
 					});
+					
+					for(let e_iprev_name of opts_new['image_preview_els_name']){
+						let e_jel = $(e_iprev_name);
+						e_jel[0].ondragover = function () { 
+							//this.className = 'hover'; 
+							return false; 
+						};
+						e_jel[0].ondrop = function (e) {
+							this.className = 'hidden';
+							e.preventDefault();
+							
+							//var file = e.dataTransfer.files[0];
+							
+							readURL(e.dataTransfer, function(){
+								//document.getElementById('image_droped').className='visible'
+							});
+						};
+					}	
 					
 					if(opts_new['is_input_hidden']) input_jel.hide();
 					
