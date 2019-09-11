@@ -1,0 +1,24 @@
+{
+  "name": "syamsoul-jquery-image-picker",
+  "version": "1.0.0",
+  "description": "A jQuery plugins to be used as image picker",
+  "main": "src/syamsoul-jquery-image-picker.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/syamsoul/jquery-image-picker.git"
+  },
+  "keywords": [
+    "jquery",
+    "image",
+    "picker"
+  ],
+  "author": "Syamsoul Azrien Muda",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/syamsoul/jquery-image-picker/issues"
+  },
+  "homepage": "https://github.com/syamsoul/jquery-image-picker#readme"
+}
