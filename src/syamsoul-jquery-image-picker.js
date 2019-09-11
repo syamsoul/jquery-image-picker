@@ -49,6 +49,29 @@
 			}
 		}
 		
+		let setOnClick = function(jel){
+			jel.on('click', function(){
+				input_jel.trigger('click');
+			});
+		}
+		
+		let setOnDrop = function(jel){
+			jel[0].ondragover = function () { 
+				//this.className = 'hover'; 
+				return false; 
+			};
+			jel[0].ondrop = function (e) {
+				this.className = 'hidden';
+				e.preventDefault();
+				
+				//var file = e.dataTransfer.files[0];
+				
+				readURL(e.dataTransfer, function(){
+					//document.getElementById('image_droped').className='visible'
+				});
+			};
+		}
+		
 		this.methods = {
 			init : function(opts) {
 				input_jel = $(this);
@@ -67,6 +90,10 @@
 						if(!Array.isArray(opts['onclick_input_els_name']) && typeof opts['onclick_input_els_name'] != "string") opts_new['onclick_input_els_name'] = [];
 						else if(typeof opts['onclick_input_els_name'] == "string") opts_new['onclick_input_els_name'] = [opts['onclick_input_els_name']];
 						else opts_new['onclick_input_els_name'] = opts['onclick_input_els_name'];
+						
+						if(!Array.isArray(opts['ondrop_input_els_name']) && typeof opts['ondrop_input_els_name'] != "string") opts_new['ondrop_input_els_name'] = [];
+						else if(typeof opts['ondrop_input_els_name'] == "string") opts_new['ondrop_input_els_name'] = [opts['ondrop_input_els_name']];
+						else opts_new['ondrop_input_els_name'] = opts['ondrop_input_els_name'];
 					}else{
 						console.log("There's something wrong with your SdImagePicker configuration");
 						return false;
@@ -76,29 +103,15 @@
 				})();
 				
 				let init = function(){
+					if(opts_new['is_input_hidden']) input_jel.hide();
+					
 					input_jel.on('change', function() {
 						readURL(this);
 					});
 					
-					for(let e_iprev_name of opts_new['image_preview_els_name']){
-						let e_jel = $(e_iprev_name);
-						e_jel[0].ondragover = function () { 
-							//this.className = 'hover'; 
-							return false; 
-						};
-						e_jel[0].ondrop = function (e) {
-							this.className = 'hidden';
-							e.preventDefault();
-							
-							//var file = e.dataTransfer.files[0];
-							
-							readURL(e.dataTransfer, function(){
-								//document.getElementById('image_droped').className='visible'
-							});
-						};
+					for(let e_odrop_input_name of opts_new['ondrop_input_els_name']){
+						setOnDrop($(e_odrop_input_name));
 					}	
-					
-					if(opts_new['is_input_hidden']) input_jel.hide();
 					
 					for(let e_oclick_input_name of opts_new['onclick_input_els_name']){
 						let e_jel = $(e_oclick_input_name);
@@ -108,7 +121,16 @@
 					}
 					
 					for(let e_iprev_name of opts_new['image_preview_els_name']){
-						$(e_iprev_name).addClass('sd-image-picker-preview-none');
+						let e_jel = $(e_iprev_name);
+						e_jel.addClass('sd-image-picker-preview-none');
+						
+						if(e_jel.data('ondrop') == true){
+							setOnDrop(e_jel);
+						}
+						
+						if(e_jel.data('onclick') == true){
+							setOnClick(e_jel);
+						}
 					}
 				}
 							
