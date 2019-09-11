@@ -20,32 +20,34 @@
 	let CORE = function(){
 		let input_jel, opts_new;
 		
-		let readURL = function(input, execPreOnLoad=function(){}) {            
+		let readURL = function(input, execOnPreLoad=function(){}, execOnLoad=function(){}) {            
 			if (input.files && input.files[0]) {
 				
-				var event = $.Event("fileLoaded");
-				event.file = input.files[0];
-				input_jel.trigger(event);
-				
-				input_jel.data('sd-image-picker-data-file', input.files[0]);
+				if(typeof execOnPreLoad == "function") execOnPreLoad(input.files[0]);
 				
 				var reader = new FileReader();
 				reader.onload = function(e) {
-					if(typeof execPreOnLoad == "function") execPreOnLoad();
-					
-					for(let e_iprev_name of opts_new['image_preview_els_name']){
-						let e_jel = $(e_iprev_name);
-						let tagName = e_jel.prop('tagName');
-						if(tagName == 'IMG'){
-							e_jel.attr('src', e.target.result);
-						}else if(tagName == 'DIV'){
-							e_jel.css('background-image', `url('${e.target.result}')`);
-						}
-						e_jel.removeClass('sd-image-picker-preview-none').addClass('sd-image-picker-preview-show');
-					}
+					if(typeof execOnLoad == "function") execOnLoad(e.target.result);
 				}
 	
 				reader.readAsDataURL(input.files[0]);
+			}
+		}
+		
+		let onSelected = function(input_obj){
+			var event = $.Event("fileLoaded");
+			event.file = input_obj;
+			input_jel.trigger(event);
+			
+			input_jel.data('sd-image-picker-data-file', input_obj);
+		}
+		
+		let setImage = function(jel, data_string){
+			let tagName = jel.prop('tagName');
+			if(tagName == 'IMG'){
+				jel.attr('src', data_string);
+			}else if(tagName == 'DIV'){
+				jel.css('background-image', `url('${data_string}')`);
 			}
 		}
 		
@@ -56,18 +58,34 @@
 		}
 		
 		let setOnDrop = function(jel){
-			jel[0].ondragover = function () { 
-				//this.className = 'hover'; 
+			jel[0].ondragover = function (e) { 
+				jel.addClass('sd-image-picker-ondragging');
+				
 				return false; 
 			};
+			
+			jel[0].ondragleave = function (e) { 
+				jel.removeClass('sd-image-picker-ondragging');
+			};
+			
 			jel[0].ondrop = function (e) {
 				this.className = 'hidden';
 				e.preventDefault();
 				
+				jel.removeClass('sd-image-picker-ondragging');
+				
 				//var file = e.dataTransfer.files[0];
 				
-				readURL(e.dataTransfer, function(){
+				readURL(e.dataTransfer, function(input_obj){
+					onSelected(input_obj);
+				}, function(data_string){
 					//document.getElementById('image_droped').className='visible'
+					
+					for(let e_iprev_name of opts_new['image_preview_els_name']){
+						let e_jel = $(e_iprev_name);
+						setImage(e_jel, data_string);
+						e_jel.removeClass('sd-image-picker-preview-none').addClass('sd-image-picker-preview-show');
+					}
 				});
 			};
 		}
@@ -106,7 +124,15 @@
 					if(opts_new['is_input_hidden']) input_jel.hide();
 					
 					input_jel.on('change', function() {
-						readURL(this);
+						readURL(this, function(input_obj){
+							onSelected(input_obj);
+						}, function(data_string){
+							for(let e_iprev_name of opts_new['image_preview_els_name']){
+								let e_jel = $(e_iprev_name);
+								setImage(e_jel, data_string);
+								e_jel.removeClass('sd-image-picker-preview-none').addClass('sd-image-picker-preview-show');
+							}
+						});
 					});
 					
 					for(let e_odrop_input_name of opts_new['ondrop_input_els_name']){
