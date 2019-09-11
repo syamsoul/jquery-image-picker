@@ -145,6 +145,7 @@
 						.removeClass('sd-image-picker-preview-show')
 						.addClass('sd-image-picker-preview-none');
 					input_jel.val('');
+					input_jel.removeData('sd-image-picker-data-file');
 				}
 			}
 		};
