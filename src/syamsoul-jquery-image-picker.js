@@ -55,7 +55,7 @@
                         }else if(tagName == 'DIV'){
                             e_jel.css('background-image', `url('${e.target.result}')`);
                         }
-                        e_jel.addClass('sd-image-picker-preview-show');
+                        e_jel.removeClass('sd-image-picker-preview-none').addClass('sd-image-picker-preview-show');
                     }
                 }
     
