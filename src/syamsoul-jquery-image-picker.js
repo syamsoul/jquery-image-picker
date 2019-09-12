@@ -52,23 +52,27 @@
 		}
 		
 		let setOnClick = function(jel){
-			jel.on('click', function(){
+			let the_zone = getDropAndClickZoneJel(jel);
+			
+			the_zone.on('click', function(){
 				input_jel.trigger('click');
 			});
 		}
 		
 		let setOnDrop = function(jel){
-			jel[0].ondragover = function (e) { 
+			let the_zone = getDropAndClickZoneJel(jel);
+			
+			the_zone[0].ondragover = function (e) { 
 				jel.addClass('sd-image-picker-ondragging');
 				
 				return false; 
 			};
 			
-			jel[0].ondragleave = function (e) { 
+			the_zone[0].ondragleave = function (e) { 
 				jel.removeClass('sd-image-picker-ondragging');
 			};
 			
-			jel[0].ondrop = function (e) {
+			the_zone[0].ondrop = function (e) {
 				this.className = 'hidden';
 				e.preventDefault();
 				
@@ -88,6 +92,20 @@
 					}
 				});
 			};
+		}
+		
+		let getDropAndClickZoneJel = function(jel){
+			let the_zone_jel = jel.find('.sd-image-picker-select-zone');
+			if(the_zone_jel.length == 0){
+				the_zone_jel = $('<div></div>').addClass('sd-image-picker-select-zone').css({
+					position:'absolute',
+					top:0, bottom:0, left:0, right:0,
+					'z-index':50,
+				});
+				jel.prepend(the_zone_jel);
+			}
+			
+			return the_zone_jel;
 		}
 		
 		this.methods = {
